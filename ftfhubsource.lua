@@ -1,58 +1,8 @@
-local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/jensonhirst/Orion/main/source'))()
-local Window = OrionLib:MakeWindow({Name = "ftf hub", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
-
-OrionLib:MakeNotification({
-	Name = "Alert!!",
-	Content = "The Script Still In Beta",
-	Image = "rbxassetid://4483345998",
-	Time = 5
-})
-
-local HomeTab = Window:MakeTab({
-	Name = "Home",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-local EspTab = Window:MakeTab({
-	Name = "Esp",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-local NBeastTab = Window:MakeTab({
-	Name = "Non-Beast",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-local BeastTab = Window:MakeTab({
-	Name = "Beast",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-local PlayerTab = Window:MakeTab({
-	Name = "Player",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-local KeyBindsTab = Window:MakeTab({
-	Name = "Keybinds For PC Only",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-local CreditsTab = Window:MakeTab({
-	Name = "Credits",
-	Icon = "rbxassetid://4483345998",
-	PremiumOnly = false
-})
-
-HomeTab:AddLabel("Hello ;)")
-HomeTab:AddLabel("NickName :"..game.Players.LocalPlayer.Name)
-
-CreditsTab:AddLabel("Esp & AutoPlay & BeastCam & NoHackFail & AutoInteract : From ftfhax")
-CreditsTab:AddLabel("Keybind & Gui : Ewerton99")
-CreditsTab:AddLabel("Beast Functions By : Raisincains")
-CreditsTab:AddLabel("Orion Ui At : https://github.com/jensonhirst/Orion/blob/main/Documentation.md")
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("ftf hub", "BloodTheme")
 
 -- Variables
+
 local podstoggle = false
 local pctoggle = false
 local playertoggle = false
@@ -65,240 +15,216 @@ local neverfailtoggle = false
 local autointeracttoggle = false
 local autoplaytoggle = false
 
--- EspToggles
-EspTab:AddToggle({
-	Name = "PlayerEsp",
-	Default = false,
-	Callback = function(v)
-		playertoggle = v
-    reloadESP()
-	end    
-})
+-- Ui
+local HomeTab = Window:NewTab("Home")
+local EspTab = Window:NewTab("Esp")
+local NBeastTab = Window:NewTab("Non-Beast")
+local BeastTab = Window:NewTab("Beast")
+local PlayerTab = Window:NewTab("Player")
+local KeybindTab = Window:NewTab("Keybind")
+local CreditsTab = Window:NewTab("Credits")
 
-EspTab:AddToggle({
-	Name = "PCEsp",
-	Default = false,
-	Callback = function(v)
-		pctoggle = v
-    reloadESP()
-	end    
-})
+local Section = HomeTab:NewSection("Home")
+local Section2 = EspTab:NewSection("Esp")
+local Section3 = NBeastTab:NewSection("Non-Beast")
+local Section4 = BeastTab:NewSection("Beast")
+local Section5 = PlayerTab:NewSection("Player")
+local Section6 = KeybindTab:NewSection("Keybinds")
+local Section7 = CreditsTab:NewSection("Credits")
+Section:NewLabel("Hello "..game.Players.LocalPlayer.Name)
+Section6:NewLabel("More Keybinds Soon")
+Section7:NewLabel("Esp & Non-Beast Functions From : Ftfhax")
+Section7:NewLabel("Keybinds : Ewerton99")
+Section7:NewLabel("Beast Functions From: Raisincains")
+Section7:NewLabel("Kavo Ui At: https://xheptcofficial.gitbook.io/kavo-library")
 
-EspTab:AddToggle({
-	Name = "BestPCEsp",
-	Default = false,
-	Callback = function(v)
-		bestpctoggle = v
-    reloadESP()
-	end    
-})
-
-EspTab:AddToggle({
-	Name = "PodsEsp",
-	Default = false,
-	Callback = function(v)
-		podstoggle = v
-    reloadESP()
-	end    
-})
-
-EspTab:AddToggle({
-	Name = "ExitDoorEsp",
-	Default = false,
-	Callback = function(v)
-		exitstoggle = v
-    reloadESP()
-	end    
-})
-
--- NBeastToggles
-NBeastTab:AddToggle({
-	Name = "NeverFailHack",
-	Default = false,
-	Callback = function(v)
-		neverfailtoggle = v
-	end    
-})
-
-NBeastTab:AddToggle({
-	Name = "AutoInteract",
-	Default = false,
-	Callback = function(v)
-		autointeracttoggle = v
-	end    
-})
-
-NBeastTab:AddToggle({
-	Name = "AutoPlay",
-	Default = false,
-	Callback = function(v)
-		autoplaytoggle = v
-	end    
-})
-
-NBeastTab:AddToggle({
-	Name = "BeastCam",
-	Default = false,
-	Callback = function(v)
-		beastcamtoggle = true
-    ViewportFrame.Visible = true
-    reloadBeastCam()
-  else
-    ViewportFrame:ClearAllChildren()
-    beastcamtoggle == false
-    ViewportFrame.Visible == false
-	end    
-})
-
--- BeastToggles
-BeastTab:AddButton({
-	Name = "Infinite Sprint",
-	Callback = function()
-    if game.Players.LocalPlayer.TempPlayerStatsModule.IsBeast.Value == true then
-      game.UserInputService.InputBegan:Connect(function(key)
-      if key.KeyCode == Enum.KeyCode.Q then
-      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 30
-      end
-      end)
-      
-      game.UserInputService.InputEnded:Connect(function(key)
-      if key.KeyCode == Enum.KeyCode.Q then
-      game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = 16
-      end
-  	end    
-})
-
-BeastTab:AddButton({
-	Name = "NoSlow",
-	Callback = function()
-    if game.Players.LocalPlayer.TempPlayerStatsModule.IsBeast.Value == true then
-      pcall(function()
-      game.Players.LocalPlayer.Character.PowersLocalScript:Destroy()
-      end)
+Section2:NewToggle("PlayerESP", "ToggleInfo", function(state)
+    if state then
+        playertoggle = true
+        reloadESP()
+    else
+        playertoggle = false
+        reloadESP()
     end
-  	end    
-})
+end)
+Section2:NewToggle("PCEsp", "ToggleInfo", function(state)
+    if state then
+        pctoggle = true
+        reloadESP()
+    else
+        pctoggle = false
+        reloadESP()
+    end
+end)
+Section2:NewToggle("BestPCEsp", "ToggleInfo", function(state)
+    if state then
+        bestpctoggle = true
+        reloadESP()
+    else
+        bestpctoggle = false
+        reloadESP()
+    end
+end)
+Section2:NewToggle("FreezePod Esp", "ToggleInfo", function(state)
+    if state then
+        podstoggle = true
+        reloadESP()
+    else
+        podstoggle = false
+        reloadESP()
+    end
+end)
+Section2:NewToggle("ExitDoorEsp", "ToggleInfo", function(state)
+    if state then
+        exitstoggle = true
+        reloadESP()
+    else
+        exitstoggle = false
+        reloadESP()
+    end
+end)
 
-BeastTab:AddButton({
-	Name = "Enable Crawl !Don't Use It Bugs Sometimes!",
-	Callback = function()
+Section3:NewToggle("NoFailHack", "ToggleInfo", function(state)
+    if state then
+        neverfailtoggle = true
+    else
+        neverfailtoggle = false
+    end
+end)
+Section3:NewToggle("AutoInteract", "ToggleInfo", function(state)
+    if state then
+        autointeracttoggle = true
+    else
+        autointeracttoggle = false
+    end
+end)
+Section3:NewToggle("AutoPlay", "ToggleInfo", function(state)
+    if state then
+        autoplaytoggle = true
+    else
+        autoplaytoggle = false
+    end
+end)
+Section3:NewToggle("BeastCam", "ToggleInfo", function(state)
+    if state then
+        beastcamtoggle = true
+		ViewportFrame.Visible = true
+		reloadBeastCam()
+    else
+        ViewportFrame:ClearAllChildren()
+		beastcamtoggle = false
+		ViewportFrame.Visible = false
+    end
+end)
+
+Section4:NewButton("NoSlow", "ButtonInfo", function()
     if game.Players.LocalPlayer.TempPlayerStatsModule.IsBeast.Value == true then
-      game:GetService("Players").LocalPlayer.TempPlayerStatsModule.DisableCrawl.Value = false
-      end
-  	end    
-})
+pcall(function()
+game.Players.LocalPlayer.Character.PowersLocalScript:Destroy()
+end)
+end
+end)
 
-BeastTab:AddButton({
-	Name = "Fix Cam",
-	Callback = function()
+Section4:NewButton("Fix Cam", "ButtonInfo", function()
     local player = game.Players.LocalPlayer
 
-    workspace.CurrentCamera.CameraSubject = player.Character:FindFirstChildWhichIsA('Humanoid')
-    workspace.CurrentCamera.CameraType = "Custom"
-    player.CameraMinZoomDistance = 0.5
-    player.CameraMaxZoomDistance = math.huge
-    player.CameraMode = "Classic"
-    player.Character.Head.Anchored = false
-  	end    
-})
+	workspace.CurrentCamera.CameraSubject = player.Character:FindFirstChildWhichIsA('Humanoid')
+	workspace.CurrentCamera.CameraType = "Custom"
+	player.CameraMinZoomDistance = 0.5
+	player.CameraMaxZoomDistance = math.huge
+	player.CameraMode = "Classic"
+	player.Character.Head.Anchored = false
+end)
 
-BeastTab:AddButton({
-	Name = "Remove Sound & Glow",
-	Callback = function()
+Section4:NewButton("Remove Sound & Glow", "ButtonInfo", function()
     if game.Players.LocalPlayer.TempPlayerStatsModule.IsBeast.Value == true then
-      for i,v in pairs(game.Players.LocalPlayer.Character.Hammer.Handle:GetChildren()) do
-          if v:IsA("Sound") then
-              pcall(function()
-              v:Destroy()
-              end)
-          end
-      end
-      
-      pcall(function()
-      game.Players.LocalPlayer.Character.Gemstone.Handle.PointLight:Destroy()
-      end)
-      end
-  	end    
-})
+for i,v in pairs(game.Players.LocalPlayer.Character.Hammer.Handle:GetChildren()) do
+    if v:IsA("Sound") then
+        pcall(function()
+        v:Destroy()
+        end)
+    end
+end
 
--- PlayersToggles
-PlayerTab:AddSlider({
-	Name = "WalkSpeed",
-	Min = 0,
-	Max = 20,
-	Default = 5,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "Speed",
-	Callback = function(Value)
-		game.Players.LocalPlayer.Character.Humanoid.Walkspeed = Value
-	end    
-})
+pcall(function()
+game.Players.LocalPlayer.Character.Gemstone.Handle.PointLight:Destroy()
+end)
+end
+end)
 
-PlayerTab:AddSlider({
-	Name = "JumpPower",
-	Min = 0,
-	Max = 20,
-	Default = 5,
-	Color = Color3.fromRGB(255,255,255),
-	Increment = 1,
-	ValueName = "Jump",
-	Callback = function(Value)
-		game.Players.LocalPlayer.Character.Humanoid.Jumppower = Value
-	end    
-})
+Section5:NewSlider("WalkSpeed", "SliderInfo", 50, 16, function(s) -- 500 (MaxValue) | 0 (MinValue)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+end)
+Section5:NewSlider("JumpPower", "SliderInfo", 250, 35, function(s) -- 500 (MaxValue) | 0 (MinValue)
+    game.Players.LocalPlayer.Character.Humanoid.Jumppower = s
+end)
+Section5:NewButton("Rejoin", "ButtonInfo", function()
+    -- rejoin		
+local TeleportService = game:GetService("TeleportService")
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+ 
+local Rejoin = coroutine.create(function()
+    local Success, ErrorMessage = pcall(function()
+        TeleportService:Teleport(game.PlaceId, LocalPlayer)
+    end)
+ 
+    if ErrorMessage and not Success then
+        warn(ErrorMessage)
+    end
+end)
+ 
+coroutine.resume(Rejoin)
+end)
 
--- Keybinds
-KeybindsTab:AddLabel("More Keybinds Soon")
-KeyBindsTab:AddBind({
-	Name = "Bind",
-	Default = Enum.KeyCode.R,
-	Hold = false,
-	Callback = function(v)
-		playertoggle = v
-    reloadESP()
-	end    
-})
-
-KeyBindsTab:AddBind({
-	Name = "Bind",
-	Default = Enum.KeyCode.F,
-	Hold = false,
-	Callback = function(v)
-		pctoggle = v
-    reloadESP()
-	end    
-})
-
-KeyBindsTab:AddBind({
-	Name = "Bind",
-	Default = Enum.KeyCode.G,
-	Hold = false,
-	Callback = function(v)
-		bestpctoggle = v
-    reloadESP()
-	end    
-})
-
-KeyBindsTab:AddBind({
-	Name = "Bind",
-	Default = Enum.KeyCode.U,
-	Hold = false,
-	Callback = function(v)
-		podstoggle = v
-    reloadESP()
-	end    
-})
-
-KeyBindsTab:AddBind({
-	Name = "Bind",
-	Default = Enum.KeyCode.Y,
-	Hold = false,
-	Callback = function(v)
-		exitstoggle = v
-    reloadESP()
-	end    
-})
+Section6:NewKeybind("PlayerESP", "PlayerEsp", Enum.KeyCode.F, function()
+	if playertoggle == false then
+	playertoggle = true
+	reloadESP()
+else
+	playertoggle = false
+	reloadESP()
+	end
+end)
+Section6:NewKeybind("PCEsp", "KeybindInfo", Enum.KeyCode.G, function()
+	if pctoggle == false then
+	pctoggle = true
+	reloadESP()
+else
+	pctoggle = false
+	reloadESP()
+	end
+end)
+Section6:NewKeybind("BestPCEsp", "KeybindInfo", Enum.KeyCode.T, function()
+	if bestpctoggle == false then
+	bestpctoggle = true
+	reloadESP()
+else
+	bestpctoggle = false
+	reloadESP()
+	end
+end)
+Section6:NewKeybind("FreezePodEsp", "KeybindInfo", Enum.KeyCode.R, function()
+	if podstoggle == false then
+	podstoggle = true
+	reloadESP()
+else
+	podstoggle = false
+	reloadESP()
+	end
+end)
+Section6:NewKeybind("ExitDoorEsp", "KeybindInfo", Enum.KeyCode.U, function()
+	if exitstoggle == false then
+	exitstoggle = true
+	reloadESP()
+else
+	exitstoggle = false
+	reloadESP()
+	end
+end)
+Section:NewKeybind("ToggleUI", "KeybindInfo", Enum.KeyCode.LeftControl, function()
+	Library:ToggleUI()
+end)
 
 -- Functions
 function reloadESP()
