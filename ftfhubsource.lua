@@ -87,9 +87,11 @@ Section2:NewToggle("TracersESP", "ToggleInfo", function(state)
     if state then
         getgenv().ESPTracers =  true
         TracersESP()
+	AssignTracers()
     else
         getgenv().ESPTracers = false
         TracersESP()
+        AssignTracers()
     end
 end)
 Section2:NewToggle("PCEsp", "ToggleInfo", function(state)
