@@ -8,6 +8,7 @@ local pctoggle = false
 local playertoggle = false
 local bestpctoggle = false
 local exitstoggle = false
+local nametoggle = false
 local beastcamtoggle = false
 
 
@@ -60,6 +61,15 @@ Section2:NewToggle("PlayerESP", "ToggleInfo", function(state)
     else
         playertoggle = false
         reloadESP()
+    end
+end)
+Section2:NewToggle("nameESP", "ToggleInfo", function(state)
+    if state then
+        nametoggle = true
+        reloadnameESP()
+    else
+        nametoggle = false
+        reloadnameESP()
     end
 end)
 Section2:NewToggle("PCEsp", "ToggleInfo", function(state)
@@ -330,6 +340,91 @@ function reloadESP()
 	end
 end
 
+function reloadnameESP()
+	local Players = game:GetService("Players")
+
+-- Function to get the current Beast
+function GetBeast()
+	local allPlayers = Players:GetPlayers()
+	for _, plr in ipairs(allPlayers) do
+		local character = plr.Character
+		if plr:FindFirstChild("TempPlayerStatsModule") and
+			plr.TempPlayerStatsModule:FindFirstChild("IsBeast") and
+			plr.TempPlayerStatsModule.IsBeast.Value == true or
+			(character and character:FindFirstChild("BeastPowers")) then
+			return plr
+		end
+	end
+end
+
+-- Function to create the BillboardGui
+local function addNameBillboard(player)
+	if player == Players.LocalPlayer then return end
+
+	local function onCharacterAdded(character)
+		local head = character:WaitForChild("Head", 5)
+		if not head then return end
+
+		if head:FindFirstChild("BillboardGui") and not nametoggle then
+			head.BillboardGui:remove()
+			return
+		end
+
+		if nametoggle and not head:FindFirstChild("BillboardGui") then
+			local billboard = Instance.new("BillboardGui")
+			billboard.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+			billboard.Active = true
+			billboard.AlwaysOnTop = true
+			billboard.LightInfluence = 1.000
+			billboard.Size = UDim2.new(0, 150, 0, 50)
+			billboard.StudsOffset = Vector3.new(0, 1, 0)
+			billboard.Parent = head
+
+			local label = Instance.new("TextLabel")
+			label.Parent = billboard
+			label.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			label.BackgroundTransparency = 1.000
+			label.BorderSizePixel = 0
+			label.Size = UDim2.new(1, 0, 1, 0)
+			label.Font = Enum.Font.SourceSans
+			label.Text = player.Name
+			label.TextColor3 = Color3.fromRGB(0, 255, 0)
+			label.TextScaled = true
+			label.TextSize = 14
+			label.TextWrapped = true
+			label.Name = "nameText"
+
+			-- Beast check loop
+			spawn(function()
+				repeat
+					wait(0.1)
+					if player == GetBeast() then
+						label.TextColor3 = Color3.fromRGB(255, 0, 0)
+					else
+						label.TextColor3 = Color3.fromRGB(0, 255, 0)
+					end
+				until not head or not head.Parent
+			end)
+		end
+	end
+
+	-- Attach to character
+	if player.Character then
+		onCharacterAdded(player.Character)
+	end
+	player.CharacterAdded:Connect(onCharacterAdded)
+end
+
+-- Run for existing players
+for _, player in ipairs(Players:GetPlayers()) do
+	addNameBillboard(player)
+end
+
+-- Run for new players
+Players.PlayerAdded:Connect(function(player)
+	addNameBillboard(player)
+end)
+end
 
 function reloadBeastCam()
 	ViewportFrame:ClearAllChildren()
