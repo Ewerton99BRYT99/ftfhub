@@ -9,8 +9,10 @@ local playertoggle = false
 local bestpctoggle = false
 local exitstoggle = false
 local nametoggle = false
+local outlinetoggle = false
 local beastcamtoggle = false
 
+getgenv().ESPTracers = false
 
 local neverfailtoggle = false
 local autointeracttoggle = false
@@ -70,6 +72,24 @@ Section2:NewToggle("nameESP", "ToggleInfo", function(state)
     else
         nametoggle = false
         reloadnameESP()
+    end
+end)
+Section2:NewToggle("OutlineESP", "ToggleInfo", function(state)
+    if state then
+        outlinetoggle = true
+        outlineESP()
+    else
+        outlineESP = false
+	outlineESP()
+    end
+end)
+Section2:NewToggle("TracersESP", "ToggleInfo", function(state)
+    if state then
+        getgenv().ESPTracers =  true
+        TracersESP()
+    else
+        getgenv().ESPTracers = false
+        TracersESP()
     end
 end)
 Section2:NewToggle("PCEsp", "ToggleInfo", function(state)
@@ -423,6 +443,159 @@ end
 -- Run for new players
 Players.PlayerAdded:Connect(function(player)
 	addNameBillboard(player)
+end)
+end
+
+function outlineESP()
+	local Players = game:GetService("Players")
+
+-- Function to get the Beast
+function getBEast()
+	local playerList = Players:GetChildren()
+	for i = 1, #playerList do
+		local character = playerList[i].Character
+		if playerList[i]:FindFirstChild("TempPlayerStatsModule") and
+		   playerList[i].TempPlayerStatsModule:FindFirstChild("IsBeast") and
+		   playerList[i].TempPlayerStatsModule.IsBeast.Value == true or
+		   (character ~= nil and character:FindFirstChild("BeastPowers")) then
+			return playerList[i]
+		end
+	end
+end
+
+-- Function to add Outline to a player's character
+local function addHighlight(player)
+	if player == Players.LocalPlayer then return end
+
+	local function onCharacterAdded(character)
+		if character:FindFirstChild("Highlight") and not outlinetoggle then
+			character.Highlight:Destroy()
+			return
+		end
+
+		if outlinetoggle and not character:FindFirstChild("Highlight") then
+			local Highlight = Instance.new("Highlight")
+			Highlight.Name = "Outline"
+			Highlight.Enabled = true
+			-- Highlight.AlwaysOnTop = true -- ❌ Not a valid property for Highlight
+			Highlight.FillColor = Color3.fromRGB(0, 255, 0)
+			Highlight.FillTransparency = 1
+			Highlight.OutlineColor = Color3.fromRGB(0, 255, 0)
+			Highlight.OutlineTransparency = 0
+			Highlight.Parent = character
+
+			spawn(function()
+				repeat
+					wait(0.1)
+					if player == getBEast() then
+						Highlight.FillColor = Color3.fromRGB(255, 0, 0)
+						Highlight.OutlineColor = Color3.fromRGB(255, 0, 0)
+					else
+						Highlight.FillColor = Color3.fromRGB(0, 255, 0)
+						Highlight.OutlineColor = Color3.fromRGB(0, 255, 0)
+					end
+				until not character or not Highlight or not Highlight.Parent
+			end)
+		end
+	end
+
+	-- Handle current character (if loaded)
+	if player.Character then
+		onCharacterAdded(player.Character)
+	end
+
+	-- Connect to future characters
+	player.CharacterAdded:Connect(onCharacterAdded)
+end
+
+-- Add to existing players
+for _, player in ipairs(Players:GetPlayers()) do
+	addHighlight(player)
+end
+
+-- Handle new players joining
+Players.PlayerAdded:Connect(function(player)
+	addHighlight(player)
+end)
+end
+
+function TracersESP()
+	local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+
+-- Function to get the Beast
+function getBeAst()
+	local playerList = Players:GetPlayers()
+	for _, player in ipairs(playerList) do
+		local character = player.Character
+		if player:FindFirstChild("TempPlayerStatsModule") and
+		   player.TempPlayerStatsModule:FindFirstChild("IsBeast") and
+		   player.TempPlayerStatsModule.IsBeast.Value == true or
+		   (character and character:FindFirstChild("BeastPowers")) then
+			return player
+		end
+	end
+end
+
+-- Function to assign tracers to all other players
+local function AssignTracers()
+	for _, player in ipairs(Players:GetPlayers()) do
+		if player ~= LocalPlayer then
+			local PlayerChar = player.Character
+			local LocalChar = LocalPlayer.Character
+
+			if PlayerChar and LocalChar and LocalChar:FindFirstChild("HumanoidRootPart") and PlayerChar:FindFirstChild("HumanoidRootPart") then
+				local beam = PlayerChar:FindFirstChild("ESPBeam")
+
+				if not beam and getgenv().ESPTracers then
+					local attachment0 = Instance.new("Attachment", LocalChar.HumanoidRootPart)
+					local attachment1 = Instance.new("Attachment", PlayerChar.HumanoidRootPart)
+
+					beam = Instance.new("Beam")
+					beam.Name = "ESPBeam"
+					beam.Attachment0 = attachment0
+					beam.Attachment1 = attachment1
+                    beam.AlwaysOnTop = true
+					beam.Color = ColorSequence.new(Color3.fromRGB(0, 255, 0)) -- ✅ FIXED
+					beam.FaceCamera = true
+					beam.Width0 = 0.1
+					beam.Width1 = 0.1
+					beam.Parent = PlayerChar
+
+					-- Update color depending on whether the player is the Beast
+					spawn(function()
+						repeat
+							wait(0.1)
+							if player == getBeAst() then
+								beam.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
+							else
+								beam.Color = ColorSequence.new(Color3.fromRGB(0, 255, 0))
+							end
+						until not beam or not beam.Parent
+					end)
+				elseif beam then
+					beam.Enabled = getgenv().ESPTracers
+				end
+			end
+		end
+	end
+end
+
+-- Run once on start
+AssignTracers()
+
+-- Re-run when new players join or characters load
+Players.PlayerAdded:Connect(function(player)
+	player.CharacterAdded:Connect(function()
+		wait(1)
+		AssignTracers()
+	end)
+end)
+
+-- Also reconnect when LocalPlayer respawns
+LocalPlayer.CharacterAdded:Connect(function()
+	wait(1)
+	AssignTracers()
 end)
 end
 
