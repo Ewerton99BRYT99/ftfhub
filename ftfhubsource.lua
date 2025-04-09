@@ -79,7 +79,7 @@ Section2:NewToggle("OutlineESP", "ToggleInfo", function(state)
         outlinetoggle = true
         outlineESP()
     else
-        outlineESP = false
+        outlinetoggle = false
 	outlineESP()
     end
 end)
