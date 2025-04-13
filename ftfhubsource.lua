@@ -5,14 +5,13 @@ local Window = Library.CreateLib("ftf hub", "BloodTheme")
 
 local podstoggle = false
 local pctoggle = false
+local pctoggle2 = false
 local playertoggle = false
 local bestpctoggle = false
 local exitstoggle = false
 local nametoggle = false
 local outlinetoggle = false
 local beastcamtoggle = false
-
-getgenv().ESPTracers = false
 
 local neverfailtoggle = false
 local autointeracttoggle = false
@@ -83,17 +82,6 @@ Section2:NewToggle("OutlineESP", "ToggleInfo", function(state)
 	outlineESP()
     end
 end)
-Section2:NewToggle("TracersESP", "ToggleInfo", function(state)
-    if state then
-        getgenv().ESPTracers =  true
-        TracersESP()
-	AssignTracers()
-    else
-        getgenv().ESPTracers = false
-        TracersESP()
-        AssignTracers()
-    end
-end)
 Section2:NewToggle("PCEsp", "ToggleInfo", function(state)
     if state then
         pctoggle = true
@@ -101,6 +89,15 @@ Section2:NewToggle("PCEsp", "ToggleInfo", function(state)
     else
         pctoggle = false
         reloadESP()
+    end
+end)
+Section2:NewToggle("PCEsp V2", "ToggleInfo", function(state)
+    if state then
+        pctoggle2 = true
+        reloadPCESP()
+    else
+        pctoggle2 = false
+        reloadPCESP()
     end
 end)
 Section2:NewToggle("BestPCEsp", "ToggleInfo", function(state)
@@ -362,6 +359,44 @@ function reloadESP()
 	end
 end
 
+function reloadPCESP()
+    spawn(function()
+        local map = game.ReplicatedStorage.CurrentMap.Value
+        if map ~= nil then
+            local mapstuff = map:GetChildren()
+            for i = 1, #mapstuff do
+                if mapstuff[i].Name == "ComputerTable" then
+                    local Screen = mapstuff[i]:FindFirstChild("Screen")
+                    local Billboard = Screen and Screen:FindFirstChild("BillboardGui")
+                    local ImageLabel = Billboard and Billboard:FindFirstChild("ImageLabel")
+
+                    if Billboard and ImageLabel then
+                        if pctoggle2 == false then
+                            Billboard.Enabled = false
+                            Billboard.Active = false
+                            ImageLabel.Active = false
+                        elseif pctoggle2 == true and not Billboard.Enabled then
+                            Billboard.Enabled = true
+                            Billboard.Active = true
+                            ImageLabel.Active = true
+                            ImageLabel.ImageColor3 = Color3.fromRGB(20, 20, 195)
+
+                            spawn(function()
+                                repeat
+                                    wait(0.1)
+                                    if Screen and ImageLabel then
+                                        ImageLabel.ImageColor3 = Screen.Color
+                                    end
+                                until ImageLabel == nil or not ImageLabel:IsDescendantOf(game)
+                            end)
+                        end
+                    end
+                end
+            end
+        end
+    end)
+end
+
 function reloadnameESP()
 	local Players = game:GetService("Players")
 
@@ -518,86 +553,6 @@ end
 -- Handle new players joining
 Players.PlayerAdded:Connect(function(player)
 	addHighlight(player)
-end)
-end
-
-function TracersESP()
-	local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-
--- Function to get the Beast
-function getBeAst()
-	local playerList = Players:GetPlayers()
-	for _, player in ipairs(playerList) do
-		local character = player.Character
-		if player:FindFirstChild("TempPlayerStatsModule") and
-		   player.TempPlayerStatsModule:FindFirstChild("IsBeast") and
-		   player.TempPlayerStatsModule.IsBeast.Value == true or
-		   (character and character:FindFirstChild("BeastPowers")) then
-			return player
-		end
-	end
-end
-
--- Function to assign tracers to all other players
-local function AssignTracers()
-	for _, player in ipairs(Players:GetPlayers()) do
-		if player ~= LocalPlayer then
-			local PlayerChar = player.Character
-			local LocalChar = LocalPlayer.Character
-
-			if PlayerChar and LocalChar and LocalChar:FindFirstChild("HumanoidRootPart") and PlayerChar:FindFirstChild("HumanoidRootPart") then
-				local beam = PlayerChar:FindFirstChild("ESPBeam")
-
-				if not beam and getgenv().ESPTracers then
-					local attachment0 = Instance.new("Attachment", LocalChar.HumanoidRootPart)
-					local attachment1 = Instance.new("Attachment", PlayerChar.HumanoidRootPart)
-
-					beam = Instance.new("Beam")
-					beam.Name = "ESPBeam"
-					beam.Attachment0 = attachment0
-					beam.Attachment1 = attachment1
-                    beam.AlwaysOnTop = true
-					beam.Color = ColorSequence.new(Color3.fromRGB(0, 255, 0)) -- ✅ FIXED
-					beam.FaceCamera = true
-					beam.Width0 = 0.1
-					beam.Width1 = 0.1
-					beam.Parent = PlayerChar
-
-					-- Update color depending on whether the player is the Beast
-					spawn(function()
-						repeat
-							wait(0.1)
-							if player == getBeAst() then
-								beam.Color = ColorSequence.new(Color3.fromRGB(255, 0, 0))
-							else
-								beam.Color = ColorSequence.new(Color3.fromRGB(0, 255, 0))
-							end
-						until not beam or not beam.Parent
-					end)
-				elseif beam then
-					beam.Enabled = getgenv().ESPTracers
-				end
-			end
-		end
-	end
-end
-
--- Run once on start
-AssignTracers()
-
--- Re-run when new players join or characters load
-Players.PlayerAdded:Connect(function(player)
-	player.CharacterAdded:Connect(function()
-		wait(1)
-		AssignTracers()
-	end)
-end)
-
--- Also reconnect when LocalPlayer respawns
-LocalPlayer.CharacterAdded:Connect(function()
-	wait(1)
-	AssignTracers()
 end)
 end
 
@@ -891,10 +846,6 @@ until touch
 end
 break
 end
-end
-				
-				
-				
-		end
+				end
 	end
 end)
