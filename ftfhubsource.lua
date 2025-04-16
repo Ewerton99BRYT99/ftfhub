@@ -218,7 +218,7 @@ else
 	reloadESP()
 	end
 end)
-Section6:NewKeybind("nameESP", "PlayerEsp", Enum.KeyCode.F, function()
+Section6:NewKeybind("nameESP", "PlayerEsp", Enum.KeyCode.K, function()
 	if nametoggle == false then
 	nametoggle = true
 	reloadnameESP()
@@ -227,7 +227,7 @@ else
 	reloadnameESP()
 	end
 end)
-Section6:NewKeybind("PCEsp", "KeybindInfo", Enum.KeyCode.G, function()
+Section6:NewKeybind("PCEsp", "KeybindInfo", Enum.KeyCode.J, function()
 	if pctoggle == false then
 	pctoggle = true
 	reloadESP()
@@ -236,7 +236,7 @@ else
 	reloadESP()
 	end
 end)
-Section6:NewKeybind("PCEsp V2", "KeybindInfo", Enum.KeyCode.G, function()
+Section6:NewKeybind("PCEsp V2", "KeybindInfo", Enum.KeyCode.Y, function()
 	if pctoggle2 == false then
 	pctoggle2 = true
 	reloadPCESP()
