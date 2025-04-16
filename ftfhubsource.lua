@@ -774,31 +774,3 @@ end
 	end
 end)
 	
-
--- ToggleUi
-local ScreenGui = Instance.new("ScreenGui")
-ScreenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
-ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-ScreenGui.ResetOnSpawn = false
-
-local ToggleUI = Instance.new("TextButton")
-ToggleUI.Name = "ToggleUI"
-ToggleUI.Parent = ScreenGui
-ToggleUI.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
-ToggleUI.BorderColor3 = Color3.fromRGB(0, 0, 0)
-ToggleUI.BorderSizePixel = 0
-ToggleUI.Position = UDim2.new(0.0347641036, 0, 0.337496996, 0)
-ToggleUI.Size = UDim2.new(0, 64, 0, 31)
-ToggleUI.Font = Enum.Font.SourceSans
-ToggleUI.Text = "ToggleUI"
-ToggleUI.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleUI.TextScaled = true
-ToggleUI.TextSize = 14.000
-ToggleUI.TextWrapped = true
-ToggleUI.Draggable = true
-ToggleUI.MouseButton1Click:Connect(function()
-	Library:ToggleUI()
-end)
-
-local UICorner = Instance.new("UICorner")
-UICorner.Parent = ToggleUI
